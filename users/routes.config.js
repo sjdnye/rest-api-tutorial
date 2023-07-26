@@ -33,4 +33,21 @@ exports.routesConfig = function (app) {
         PermissionMiddleware.minimumPermissionLevelRequired(ADMIN),
         UsersController.removeById
     ]);
+
+
+    //@desc Handle Add Friend ID To User's Friend List
+    //@route POST /users/add-friend/:userId
+    app.post('/users/add-friend/:userId',[
+        ValidationMiddleware.validJWTNeeded,
+        PermissionMiddleware.minimumPermissionLevelRequired(FREE),
+        UsersController.handleAddddFriend
+    ])
+
+    //@desc Handle Remove Friend ID From User's Friend List
+    //@route POST /users/remove-friend/:userId
+    app.post('/users/remove-friend/:userId',[
+        ValidationMiddleware.validJWTNeeded,
+        PermissionMiddleware.minimumPermissionLevelRequired(FREE),
+        UsersController.handleRemoveFriend
+    ])
 };

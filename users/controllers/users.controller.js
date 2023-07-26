@@ -15,20 +15,25 @@ exports.insert = (req, res) => {
 exports.list = (req, res) => {
     let limit = req.query.limit && req.query.limit <= 100 ? parseInt(req.query.limit) : 10;
     let page = 0;
+
+    const returnFriendsData = req.query.additional === "friends" ? true : false;
+
     if (req.query) {
         if (req.query.page) {
             req.query.page = parseInt(req.query.page);
             page = Number.isInteger(req.query.page) ? req.query.page : 0;
         }
     }
-    UserModel.list(limit, page)
+    UserModel.list(limit, page, returnFriendsData)
         .then((result) => {
             res.status(200).send(result);
         })
 };
 
 exports.getById = (req, res) => {
-    UserModel.findById(req.params.userId)
+    const returnFriendsData = req.query.additional === "friends" ? true : false;
+
+    UserModel.findById(req.params.userId, returnFriendsData)
         .then((result) => {
             res.status(200).send(result);
         });
@@ -53,3 +58,32 @@ exports.removeById = (req, res) => {
             res.status(204).send({});
         });
 };
+
+exports.handleAddddFriend = async(req, res) => {
+    const userId = req.params.userId;
+    const {friendId} = req.body;
+
+    try{
+        await UserModel.addFriend(userId,friendId)
+
+        res.status(200).json({friendId: friendId,message: "User added to list successfully"})
+
+    }catch(err){
+        res.status(400).json({message: err})
+    }
+}
+
+exports.handleRemoveFriend = async(req, res) => {
+    const userId = req.params.userId;
+    const {friendId} = req.body;
+
+    try{
+        await UserModel.removeFriend(userId,friendId)
+
+        res.status(200).json({friendId: friendId ,message: "User removed from list successfully"})
+
+    }catch(err){
+        res.status(400).json({message: err})
+    }
+
+}
